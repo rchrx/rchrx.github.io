@@ -3,18 +3,12 @@ import { SYSTEM_INFO } from '../data/portfolioData';
 
 interface NavbarProps {
   activeSection: string;
-  currentView: 'home' | 'medium';
   onOpenTerminal: () => void;
-  onNavigateHome: () => void;
-  onNavigateMedium: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   activeSection,
-  currentView,
-  onOpenTerminal,
-  onNavigateHome,
-  onNavigateMedium
+  onOpenTerminal
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [time, setTime] = useState('00:00:00');
@@ -65,14 +59,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const handleLinkClick = (id: string) => {
     setMobileMenuOpen(false);
-    if (currentView !== 'home') {
-      onNavigateHome();
-      setTimeout(() => {
-        const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 50);
-      return;
-    }
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -88,82 +74,51 @@ export const Navbar: React.FC<NavbarProps> = ({
           aria-label="Ruchir Gupta Workstation"
           onClick={(e) => {
             e.preventDefault();
-            if (currentView !== 'home') {
-              onNavigateHome();
-            } else {
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         >
           <span className="brand-monogram">RG</span>
           <span className="brand-title">
             ruchir@arch-server
-            <span>{currentView === 'medium' ? ':~/publications' : ':~'}</span>
+            <span>:~</span>
           </span>
         </a>
 
         {/* Polybar Workspaces */}
         <div className={`nav-links ${mobileMenuOpen ? 'open' : ''}`} id="nav-links">
-          {currentView === 'home' ? (
-            <>
-              {homeNavItems.map((item) => (
-                <a
-                  key={item.id}
-                  href={`#${item.id}`}
-                  className={`nav-link ${activeSection === item.id ? 'active' : ''}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleLinkClick(item.id);
-                  }}
-                >
-                  {item.label}
-                </a>
-              ))}
-              <a
-                href="#/medium"
-                className="nav-link text-cyan"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setMobileMenuOpen(false);
-                  onNavigateMedium();
-                }}
-              >
-                [medium]
-              </a>
-              <a
-                href={SYSTEM_INFO.vscoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="nav-link text-cyan"
-                title="Open VSCO Profile in new tab"
-              >
-                [vsco]
-              </a>
-            </>
-          ) : (
-            <>
-              <button
-                className="nav-link text-green"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onNavigateHome();
-                }}
-              >
-                &larr; [workstation]
-              </button>
-              <span className="nav-link active">[medium articles]</span>
-              <a
-                href={SYSTEM_INFO.vscoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="nav-link text-cyan"
-                title="Open VSCO Profile in new tab"
-              >
-                [vsco]
-              </a>
-            </>
-          )}
+          {homeNavItems.map((item) => (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              className={`nav-link ${activeSection === item.id ? 'active' : ''}`}
+              onClick={(e) => {
+                e.preventDefault();
+                handleLinkClick(item.id);
+              }}
+            >
+              {item.label}
+            </a>
+          ))}
+          <a
+            href={SYSTEM_INFO.mediumUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-link text-cyan"
+            title="Open Medium Profile in new tab"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            [medium]
+          </a>
+          <a
+            href={SYSTEM_INFO.vscoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-link text-cyan"
+            title="Open VSCO Profile in new tab"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            [vsco]
+          </a>
         </div>
 
         {/* Telemetry & Action Cluster */}

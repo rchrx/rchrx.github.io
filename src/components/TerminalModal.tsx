@@ -4,7 +4,6 @@ import { THEME_PRESETS, applyTheme, getSavedTheme } from '../services/themeServi
 interface TerminalModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onNavigateMedium?: () => void;
 }
 
 interface TermOutputItem {
@@ -15,8 +14,7 @@ interface TermOutputItem {
 
 export const TerminalModal: React.FC<TerminalModalProps> = ({
   isOpen,
-  onClose,
-  onNavigateMedium
+  onClose
 }) => {
   const [inputVal, setInputVal] = useState('');
   const [history, setHistory] = useState<string[]>([]);
@@ -170,14 +168,9 @@ export const TerminalModal: React.FC<TerminalModalProps> = ({
         <span class="term-highlight">Medium Engineering Publications</span><br>
         Direct URL: <a href="https://medium.com/@rchrx" target="_blank" rel="noopener noreferrer" class="term-accent">https://medium.com/@rchrx</a><br>
         Focus Areas: Distributed Systems, High-Concurrency WebSockets, Azure OpenAI, and React Velocity.<br>
-        <em>Switching to publications view...</em>
+        <span class="text-green">[LAUNCH]</span> Opened @rchrx Medium publications in external browser tab.
       `;
-      if (onNavigateMedium) {
-        setTimeout(() => {
-          onNavigateMedium();
-          onClose();
-        }, 500);
-      }
+      window.open('https://medium.com/@rchrx', '_blank', 'noopener,noreferrer');
     } else if (cmdLower === 'vsco' || cmdLower === 'photos' || cmdLower === 'gallery') {
       outputHtml = `
         <span class="term-highlight">VSCO Visual Frame Buffer</span><br>

@@ -10,14 +10,9 @@ import { GithubGraph } from './components/GithubGraph';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import { TerminalModal } from './components/TerminalModal';
-import { MediumPage } from './components/MediumPage';
 import { initTheme } from './services/themeService';
 
 export const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<'home' | 'medium'>(() => {
-    if (window.location.hash.startsWith('#/medium')) return 'medium';
-    return 'home';
-  });
   const [activeSection, setActiveSection] = useState<string>('hero');
   const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
 
@@ -25,33 +20,6 @@ export const App: React.FC = () => {
   useEffect(() => {
     initTheme();
   }, []);
-
-  // Hash route listener
-  useEffect(() => {
-    const handleHashChange = () => {
-      if (window.location.hash.startsWith('#/medium')) {
-        setCurrentView('medium');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        setCurrentView('home');
-      }
-    };
-
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
-
-  const navigateToHome = () => {
-    window.location.hash = '#/';
-    setCurrentView('home');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const navigateToMedium = () => {
-    window.location.hash = '#/medium';
-    setCurrentView('medium');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   // Global hotkeys (`~` or `Cmd+K`)
   useEffect(() => {
@@ -73,10 +41,8 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Scrollspy observer for active section (home view only)
+  // Scrollspy observer for active section
   useEffect(() => {
-    if (currentView !== 'home') return;
-
     const handleScroll = () => {
       const scrollY = window.pageYOffset + 140;
       const sectionIds = ['overview', 'experience', 'architecture', 'skills', 'github', 'contact'];
@@ -100,7 +66,7 @@ export const App: React.FC = () => {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [currentView]);
+  }, []);
 
   return (
     <div className="linux-theme">
@@ -110,27 +76,18 @@ export const App: React.FC = () => {
       {/* Polybar / Tmux Top Navigation Bar */}
       <Navbar
         activeSection={activeSection}
-        currentView={currentView}
         onOpenTerminal={() => setIsTerminalOpen(true)}
-        onNavigateHome={navigateToHome}
-        onNavigateMedium={navigateToMedium}
       />
 
-      {/* Main Content View Switcher */}
+      {/* Main Content */}
       <main id="main-content">
-        {currentView === 'home' ? (
-          <>
-            <Hero onOpenTerminal={() => setIsTerminalOpen(true)} />
-            <Overview />
-            <Experience />
-            <Architecture />
-            <Skills />
-            <GithubGraph />
-            <Contact />
-          </>
-        ) : (
-          <MediumPage onReturnToWorkstation={navigateToHome} />
-        )}
+        <Hero onOpenTerminal={() => setIsTerminalOpen(true)} />
+        <Overview />
+        <Experience />
+        <Architecture />
+        <Skills />
+        <GithubGraph />
+        <Contact />
       </main>
 
       {/* Tmux Footer Status Bar */}
@@ -140,7 +97,6 @@ export const App: React.FC = () => {
       <TerminalModal
         isOpen={isTerminalOpen}
         onClose={() => setIsTerminalOpen(false)}
-        onNavigateMedium={navigateToMedium}
       />
     </div>
   );
